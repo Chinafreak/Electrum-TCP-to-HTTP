@@ -1,2 +1,1 @@
-# Electrum-TCP-to-HTTP
-converts tcp protocol to http request
+If description needed, ask it at issue.
