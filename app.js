@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 var argv = require('minimist')(process.argv.slice(2));
 
 var electrumPort = argv.e_port || 50002;
-var electrumAddress = argv.e_ip || '35.185.122.226';
+var electrumAddress = argv.e_ip || 'localhost';
 var electrumProtocol = argv.e_protocol || "tls";
 var port = argv.port || 50003;
 
