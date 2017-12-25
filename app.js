@@ -9,64 +9,68 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 var argv = require('minimist')(process.argv.slice(2));
+const publicIp = require('public-ip');
 
-var electrumPort = argv.e_port || 50002;
-var electrumAddress = argv.e_ip || 'localhost';
-var electrumProtocol = argv.e_protocol || "tls";
-var port = argv.port || 50003;
+publicIp.v4().then(ip => {
+  var electrumPort = argv.e_port || 50002;
+  var electrumAddress = argv.e_ip || ip;
+  var electrumProtocol = argv.e_protocol || "tls";
+  var port = argv.port || 50003;
 
-const ecl = new ElectrumCli(electrumPort, electrumAddress, electrumProtocol);
 
-ecl.connect().then(() => {
-  app.post('/', async(req, res) => {
-    if (req.body.params == null) {
-      req.body.params = [];
-    }
+  const ecl = new ElectrumCli(electrumPort, electrumAddress, electrumProtocol);
 
-    if (req.body.method == null) {
-      res.send(JSON.stringify({
-        "success": 0,
-        "message": "Method is missing",
-        "result": null
-      }))
-    }
+  ecl.connect().then(() => {
+    app.post('/', async(req, res) => {
+      if (req.body.params == null) {
+        req.body.params = [];
+      }
 
-    setTimeout(() => {
-      try {
+      if (req.body.method == null) {
         res.send(JSON.stringify({
           "success": 0,
-          "message": "Timeout - maybe method/params is wrong?",
+          "message": "Method is missing",
           "result": null
         }))
-      } catch (e) {}
-    }, 5000);
+      }
 
-    ecl.request(req.body.method, req.body.params).then(result => {
-        res.send(JSON.stringify({
-          "success": 1,
-          "message": "",
-          "result": result
-        }));
-      })
-      .catch(e => {
-        res.send(JSON.stringify({
-          "success": 0,
-          "message": e,
-          "result": null
-        }))
-      });
+      setTimeout(() => {
+        try {
+          res.send(JSON.stringify({
+            "success": 0,
+            "message": "Timeout - maybe method/params is wrong?",
+            "result": null
+          }))
+        } catch (e) {}
+      }, 5000);
 
+      ecl.request(req.body.method, req.body.params).then(result => {
+          res.send(JSON.stringify({
+            "success": 1,
+            "message": "",
+            "result": result
+          }));
+        })
+        .catch(e => {
+          res.send(JSON.stringify({
+            "success": 0,
+            "message": e,
+            "result": null
+          }))
+        });
+
+    })
+
+    app.use(function (err, req, res, next) {
+      console.error(err.stack)
+      res.status(500).send('Something is broken!')
+    })
+
+    var server = app.listen(port, function () {
+      var host = server.address().address
+      var port = server.address().port
+
+      console.log("App listening at http://%s:%s", host, port)
+    });
   })
-
-  app.use(function (err, req, res, next) {
-    console.error(err.stack)
-    res.status(500).send('Something is broken!')
-  })
-
-  var server = app.listen(port, function () {
-    var host = server.address().address
-    var port = server.address().port
-
-    console.log("App listening at http://%s:%s", host, port)
-  });
-})
+});
