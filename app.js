@@ -19,16 +19,19 @@ publicIp.v4().then(ip => {
 
 
   const ecl = new ElectrumCli(electrumPort, electrumAddress, electrumProtocol);
-  ecl.onClose(() => {
-    console.log("closed");
-  })
-  ecl.onEnd(() => {
-    console.log("end");
-  })
-  ecl.onError((e) => {
-    console.log("error: " + JSON.stringify(e));
-  })
+
   ecl.connect().then(() => {
+
+    ecl.onClose(() => {
+      console.log("closed");
+    })
+    ecl.onEnd(() => {
+      console.log("end");
+    })
+    ecl.onError((e) => {
+      console.log("error: " + JSON.stringify(e));
+    })
+
     app.post('/', async(req, res) => {
       if (req.body.params == null) {
         req.body.params = [];
