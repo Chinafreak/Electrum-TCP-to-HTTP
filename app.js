@@ -36,16 +36,6 @@ publicIp.v4().then(ip => {
       });
     }, 10000);
 
-    ecl.onClose(() => {
-      console.log("closed");
-    })
-    ecl.onEnd(() => {
-      console.log("end");
-    })
-    ecl.onError((e) => {
-      console.log("error: " + JSON.stringify(e));
-    })
-
     app.post('/', async(req, res) => {
       if (req.body.params == null) {
         req.body.params = [];
