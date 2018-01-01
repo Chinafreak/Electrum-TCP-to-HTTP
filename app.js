@@ -1,3 +1,7 @@
+import {
+  setInterval
+} from 'timers';
+
 var express = require('express');
 const ElectrumCli = require('electrum-client')
 var app = express();
@@ -27,6 +31,10 @@ publicIp.v4().then(ip => {
   const ecl = new ElectrumCli(electrumPort, electrumAddress, electrumProtocol);
 
   ecl.connect().then(() => {
+    const ver = await ecl.server_version("2.7.11", "1.0")
+    setInterval(() => {
+      const ver = await ecl.server_version("2.7.11", "1.0")
+    }, 10000);
 
     ecl.onClose(() => {
       console.log("closed");
