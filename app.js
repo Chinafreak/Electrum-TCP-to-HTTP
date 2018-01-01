@@ -1,7 +1,3 @@
-import {
-  setInterval
-} from 'timers';
-
 var express = require('express');
 const ElectrumCli = require('electrum-client')
 var app = express();
