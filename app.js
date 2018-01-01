@@ -27,9 +27,13 @@ publicIp.v4().then(ip => {
   const ecl = new ElectrumCli(electrumPort, electrumAddress, electrumProtocol);
 
   ecl.connect().then(() => {
-    const ver = await ecl.server_version("2.7.11", "1.0")
+    ecl.request("server.version", "2.7.11", "1.0").then(result => {
+      //PING
+    });
     setInterval(() => {
-      const ver = await ecl.server_version("2.7.11", "1.0")
+      ecl.request("server.version", "2.7.11", "1.0").then(result => {
+        //PING
+      });
     }, 10000);
 
     ecl.onClose(() => {
